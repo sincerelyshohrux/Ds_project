@@ -15,6 +15,8 @@ private:
     int nextId;   // auto-increment ID for new items
 
     MenuItem* findById(int id) const;   // helper: returns nullptr if not found
+    void swapData(MenuItem* a, MenuItem* b);   // helper: swaps the data of two nodes
+    bool isLess(MenuItem* a, MenuItem* b, bool byPrice) const;   // helper: compares two nodes
 
 public:
     MenuList();
@@ -26,5 +28,10 @@ public:
     bool updateItem(int id, const std::string& newName, double newPrice);
     bool deleteItem(int id);
     bool exists(int id) const;
-};
 
+    // Gets name and price of an item. Returns false if the ID does not exist.
+    bool getItem(int id, std::string& name, double& price) const;
+
+    // Sorts the menu. byPrice = true -> by price, false -> by name
+    void sortMenu(bool byPrice);
+};

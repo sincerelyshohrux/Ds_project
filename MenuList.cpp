@@ -34,6 +34,16 @@ bool MenuList::exists(int id) const {
     return findById(id) != nullptr;
 }
 
+// Copies name and price of the item with the given ID. Time: O(n)
+bool MenuList::getItem(int id, string& name, double& price) const {
+    MenuItem* item = findById(id);
+    if (item == nullptr) return false;
+
+    name = item->name;
+    price = item->price;
+    return true;
+}
+
 // Adds a new item at the end of the list. Time: O(n)
 void MenuList::addItem(const string& name, double price) {
     MenuItem* newItem = new MenuItem;
@@ -103,4 +113,47 @@ bool MenuList::deleteItem(int id) {
     current->next = temp->next;
     delete temp;
     return true;
+}
+
+// Swaps id, name and price of two nodes (the links stay the same)
+void MenuList::swapData(MenuItem* a, MenuItem* b) {
+    int tempId = a->id;
+    a->id = b->id;
+    b->id = tempId;
+
+    string tempName = a->name;
+    a->name = b->name;
+    b->name = tempName;
+
+    double tempPrice = a->price;
+    a->price = b->price;
+    b->price = tempPrice;
+}
+
+// Returns true if a should come before b
+bool MenuList::isLess(MenuItem* a, MenuItem* b, bool byPrice) const {
+    if (byPrice) {
+        return a->price < b->price;
+    }
+    return a->name < b->name;   // alphabetical order
+}
+
+// Selection sort on the linked list. Time: O(n^2)
+void MenuList::sortMenu(bool byPrice) {
+    if (head == nullptr || head->next == nullptr) return;   // 0 or 1 item
+
+    for (MenuItem* i = head; i->next != nullptr; i = i->next) {
+        MenuItem* smallest = i;
+
+        // find the smallest item in the remaining part
+        for (MenuItem* j = i->next; j != nullptr; j = j->next) {
+            if (isLess(j, smallest, byPrice)) {
+                smallest = j;
+            }
+        }
+
+        if (smallest != i) {
+            swapData(i, smallest);
+        }
+    }
 }

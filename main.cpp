@@ -5,10 +5,10 @@
 // Members: <Shohruxbek Maxamatjonov (U2510135)>, <Suxrobbek Muminov (U2510138)>, <Asliddin Xazratqulov (U2510142)>, <Name 4 (ID)>
 // ============================================================
 
-
 #include <iostream>
 #include "Utils.h"
 #include "MenuList.h"
+#include "OrderQueue.h"
 using namespace std;
 
 void showMainMenu() {
@@ -17,11 +17,60 @@ void showMainMenu() {
     cout << "2. Display menu\n";
     cout << "3. Update menu item\n";
     cout << "4. Delete menu item\n";
+    cout << "5. Sort menu by price\n";
+    cout << "6. Sort menu by name\n";
+    cout << "7. Place order\n";
+    cout << "8. Display pending orders\n";
     cout << "0. Exit\n";
+}
+
+// Asks the customer for items and adds the order to the queue
+void placeOrder(MenuList& menu, OrderQueue& pending) {
+    if (menu.isEmpty()) {
+        cout << "Menu is empty. Cannot place an order.\n";
+        return;
+    }
+
+    string customer = readText("Enter customer name: ");
+    menu.display();
+
+    int itemIds[MAX_ORDER_ITEMS];
+    int count = 0;
+    double total = 0;
+
+    cout << "Enter item IDs one by one. Enter 0 to finish.\n";
+    while (count < MAX_ORDER_ITEMS) {
+        int id = readInt("Item ID (0 to finish): ");
+        if (id == 0) break;
+
+        string name;
+        double price;
+        if (!menu.getItem(id, name, price)) {
+            cout << "Item with ID " << id << " not found.\n";
+            continue;
+        }
+
+        itemIds[count] = id;
+        count++;
+        total += price;
+        cout << "Added: " << name << " (" << price << ")\n";
+    }
+
+    if (count == MAX_ORDER_ITEMS) {
+        cout << "Order is full (max " << MAX_ORDER_ITEMS << " items).\n";
+    }
+    if (count == 0) {
+        cout << "No items selected. Order was not placed.\n";
+        return;
+    }
+
+    int orderId = pending.enqueue(customer, itemIds, count, total);
+    cout << "Order placed! Order ID: " << orderId << ", Total: " << total << "\n";
 }
 
 int main() {
     MenuList menu;
+    OrderQueue pending;
     int choice;
 
     do {
@@ -69,6 +118,30 @@ int main() {
                 }
                 break;
             }
+            case 5:
+                if (menu.isEmpty()) {
+                    cout << "Menu is empty. Nothing to sort.\n";
+                    break;
+                }
+                menu.sortMenu(true);
+                cout << "Menu sorted by price.\n";
+                menu.display();
+                break;
+            case 6:
+                if (menu.isEmpty()) {
+                    cout << "Menu is empty. Nothing to sort.\n";
+                    break;
+                }
+                menu.sortMenu(false);
+                cout << "Menu sorted by name.\n";
+                menu.display();
+                break;
+            case 7:
+                placeOrder(menu, pending);
+                break;
+            case 8:
+                pending.display();
+                break;
             case 0:
                 cout << "Goodbye!\n";
                 break;

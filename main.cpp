@@ -6,9 +6,11 @@
 // ============================================================
 
 #include <iostream>
+#include <iomanip>
 #include "Utils.h"
 #include "MenuList.h"
 #include "OrderQueue.h"
+#include "OrderStack.h"
 using namespace std;
 
 void showMainMenu() {
@@ -21,6 +23,10 @@ void showMainMenu() {
     cout << "6. Sort menu by name\n";
     cout << "7. Place order\n";
     cout << "8. Display pending orders\n";
+    cout << "9. Process next order (FIFO)\n";
+    cout << "10. Cancel an order\n";
+    cout << "11. Display completed-order history\n";
+    cout << "12. Search order by ID\n";
     cout << "0. Exit\n";
 }
 
@@ -34,7 +40,8 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
     string customer = readText("Enter customer name: ");
     menu.display();
 
-    int itemIds[MAX_ORDER_ITEMS];
+    int itemIds[MAX_ORDER_ITEMS];          // array: chosen item IDs
+    string itemNames[MAX_ORDER_ITEMS];     // array: chosen item names
     int count = 0;
     double total = 0;
 
@@ -51,6 +58,7 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
         }
 
         itemIds[count] = id;
+        itemNames[count] = name;
         count++;
         total += price;
         cout << "Added: " << name << " (" << price << ")\n";
@@ -64,13 +72,67 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
         return;
     }
 
-    int orderId = pending.enqueue(customer, itemIds, count, total);
-    cout << "Order placed! Order ID: " << orderId << ", Total: " << total << "\n";
+    int orderId = pending.enqueue(customer, itemIds, itemNames, count, total);
+    cout << "Order placed! Order ID: " << orderId << ", Total: " << fixed << setprecision(2) << total << "\n";
+}
+
+// Takes the oldest pending order (dequeue) and pushes it to history (stack)
+void processNextOrder(OrderQueue& pending, OrderStack& completed) {
+    if (pending.isEmpty()) {
+        cout << "No pending orders to process.\n";
+        return;
+    }
+    Order* order = pending.dequeue();   // O(1)
+    completed.push(order);              // O(1)
+    cout << "Processed: ";
+    printOrder(order);
+    cout << "Remaining pending orders: " << pending.size() << "\n";
+}
+
+// Cancels a pending order. Completed orders cannot be cancelled.
+void cancelOrder(OrderQueue& pending, const OrderStack& completed) {
+    if (pending.isEmpty()) {
+        cout << "No pending orders to cancel.\n";
+        return;
+    }
+    pending.display();
+    int id = readInt("Enter order ID to cancel: ");
+    if (pending.cancelOrder(id)) {
+        cout << "Order " << id << " cancelled.\n";
+    } else if (completed.findById(id) != nullptr) {
+        cout << "Order " << id << " is already completed and cannot be cancelled.\n";
+    } else {
+        cout << "Order with ID " << id << " not found.\n";
+    }
+}
+
+// Searches pending queue first, then completed history
+void searchOrder(const OrderQueue& pending, const OrderStack& completed) {
+    if (pending.isEmpty() && completed.isEmpty()) {
+        cout << "There are no orders yet.\n";
+        return;
+    }
+    int id = readInt("Enter order ID to search: ");
+
+    const Order* order = pending.findById(id);
+    if (order != nullptr) {
+        cout << "Status: PENDING\n";
+        printOrder(order);
+        return;
+    }
+    order = completed.findById(id);
+    if (order != nullptr) {
+        cout << "Status: COMPLETED\n";
+        printOrder(order);
+        return;
+    }
+    cout << "Order with ID " << id << " not found (it may have been cancelled).\n";
 }
 
 int main() {
     MenuList menu;
-    OrderQueue pending;
+    OrderQueue pending;      // queue: orders waiting to be processed
+    OrderStack completed;    // stack: history of processed orders
     int choice;
 
     do {
@@ -141,6 +203,18 @@ int main() {
                 break;
             case 8:
                 pending.display();
+                break;
+            case 9:
+                processNextOrder(pending, completed);
+                break;
+            case 10:
+                cancelOrder(pending, completed);
+                break;
+            case 11:
+                completed.display();
+                break;
+            case 12:
+                searchOrder(pending, completed);
                 break;
             case 0:
                 cout << "Goodbye!\n";

@@ -1,5 +1,6 @@
 #include "MenuList.h"
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
 MenuList::MenuList() {
@@ -74,7 +75,7 @@ void MenuList::display() const {
     cout << "ID\tPrice\tName\n";
     MenuItem* current = head;
     while (current != nullptr) {
-        cout << current->id << "\t" << current->price << "\t" << current->name << "\n";
+        cout << current->id << "\t" << fixed << setprecision(2) << current->price << "\t" << current->name << "\n";
         current = current->next;
     }
 }
@@ -130,12 +131,23 @@ void MenuList::swapData(MenuItem* a, MenuItem* b) {
     b->price = tempPrice;
 }
 
+// Returns a lowercase copy of the text (so "apple" and "Apple" sort together)
+static string toLower(const string& text) {
+    string result = text;
+    for (size_t i = 0; i < result.size(); i++) {
+        if (result[i] >= 'A' && result[i] <= 'Z') {
+            result[i] = result[i] - 'A' + 'a';
+        }
+    }
+    return result;
+}
+
 // Returns true if a should come before b
 bool MenuList::isLess(MenuItem* a, MenuItem* b, bool byPrice) const {
     if (byPrice) {
         return a->price < b->price;
     }
-    return a->name < b->name;   // alphabetical order
+    return toLower(a->name) < toLower(b->name);   // alphabetical, ignores upper/lower case
 }
 
 // Selection sort on the linked list. Time: O(n^2)

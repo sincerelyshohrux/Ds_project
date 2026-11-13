@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <string>
 
 // Reads a whole number. Repeats until the input is valid.
@@ -9,3 +12,4 @@ double readPrice(const std::string& prompt);
 // Reads a non-empty line of text.
 std::string readText(const std::string& prompt);
 
+#endif

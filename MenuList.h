@@ -1,3 +1,6 @@
+#ifndef MENULIST_H
+#define MENULIST_H
+
 #include <string>
 
 // One node of the menu linked list
@@ -35,3 +38,5 @@ public:
     // Sorts the menu. byPrice = true -> by price, false -> by name
     void sortMenu(bool byPrice);
 };
+
+#endif

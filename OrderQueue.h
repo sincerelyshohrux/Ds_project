@@ -16,6 +16,11 @@ public:
     OrderQueue();
     ~OrderQueue();
 
+    // Copying is disabled: a copy would share the same nodes and both
+    // destructors would delete them (double free).
+    OrderQueue(const OrderQueue&) = delete;
+    OrderQueue& operator=(const OrderQueue&) = delete;
+
     bool isEmpty() const;
     int size() const;
 

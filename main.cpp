@@ -46,9 +46,16 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
     double total = 0;
 
     cout << "Enter item IDs one by one. Enter 0 to finish.\n";
-    while (count < MAX_ORDER_ITEMS) {
+    // The loop always ends with 0, even when the order is full. Otherwise the
+    // user's "0 to finish" would be read by the main menu as "Exit".
+    while (true) {
         int id = readInt("Item ID (0 to finish): ");
         if (id == 0) break;
+
+        if (count == MAX_ORDER_ITEMS) {   // array is full: ignore extra items
+            cout << "Order is full (max " << MAX_ORDER_ITEMS << " items). Enter 0 to finish.\n";
+            continue;
+        }
 
         string name;
         double price;
@@ -62,11 +69,11 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
         count++;
         total += price;
         cout << "Added: " << name << " (" << price << ")\n";
+        if (count == MAX_ORDER_ITEMS) {
+            cout << "Order is now full (max " << MAX_ORDER_ITEMS << " items). Enter 0 to finish.\n";
+        }
     }
 
-    if (count == MAX_ORDER_ITEMS) {
-        cout << "Order is full (max " << MAX_ORDER_ITEMS << " items).\n";
-    }
     if (count == 0) {
         cout << "No items selected. Order was not placed.\n";
         return;

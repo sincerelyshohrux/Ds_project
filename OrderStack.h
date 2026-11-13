@@ -14,6 +14,11 @@ public:
     OrderStack();
     ~OrderStack();
 
+    // Copying is disabled: a copy would share the same nodes and both
+    // destructors would delete them (double free).
+    OrderStack(const OrderStack&) = delete;
+    OrderStack& operator=(const OrderStack&) = delete;
+
     bool isEmpty() const;
     int size() const;
 

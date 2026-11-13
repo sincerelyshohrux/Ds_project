@@ -25,6 +25,11 @@ public:
     MenuList();
     ~MenuList();
 
+    // Copying is disabled: a copy would share the same nodes and both
+    // destructors would delete them (double free).
+    MenuList(const MenuList&) = delete;
+    MenuList& operator=(const MenuList&) = delete;
+
     bool isEmpty() const;
     void addItem(const std::string& name, double price);
     void display() const;

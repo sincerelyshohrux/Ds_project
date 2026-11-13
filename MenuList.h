@@ -37,6 +37,10 @@ public:
     bool deleteItem(int id);
     bool exists(int id) const;
 
+    // True if another item (with a different ID) already has this name.
+    // Upper/lower case is ignored. Use skipId = 0 when adding a new item.
+    bool nameTaken(const std::string& name, int skipId) const;
+
     // Gets name and price of an item. Returns false if the ID does not exist.
     bool getItem(int id, std::string& name, double& price) const;
 

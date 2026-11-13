@@ -1,6 +1,7 @@
 #include "MenuList.h"
 #include <iostream>
 #include <iomanip>
+#include <utility>   // std::swap
 using namespace std;
 
 MenuList::MenuList() {
@@ -33,6 +34,29 @@ MenuItem* MenuList::findById(int id) const {
 
 bool MenuList::exists(int id) const {
     return findById(id) != nullptr;
+}
+
+// Returns a lowercase copy of the text (so "Pizza" and "pizza" are treated the same)
+static string toLower(const string& text) {
+    string result = text;
+    for (size_t i = 0; i < result.size(); i++) {
+        if (result[i] >= 'A' && result[i] <= 'Z') {
+            result[i] = result[i] - 'A' + 'a';
+        }
+    }
+    return result;
+}
+
+// Linear search by name. Time: O(n)
+bool MenuList::nameTaken(const string& name, int skipId) const {
+    MenuItem* current = head;
+    while (current != nullptr) {
+        if (current->id != skipId && toLower(current->name) == toLower(name)) {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
 }
 
 // Copies name and price of the item with the given ID. Time: O(n)
@@ -118,28 +142,9 @@ bool MenuList::deleteItem(int id) {
 
 // Swaps id, name and price of two nodes (the links stay the same)
 void MenuList::swapData(MenuItem* a, MenuItem* b) {
-    int tempId = a->id;
-    a->id = b->id;
-    b->id = tempId;
-
-    string tempName = a->name;
-    a->name = b->name;
-    b->name = tempName;
-
-    double tempPrice = a->price;
-    a->price = b->price;
-    b->price = tempPrice;
-}
-
-// Returns a lowercase copy of the text (so "apple" and "Apple" sort together)
-static string toLower(const string& text) {
-    string result = text;
-    for (size_t i = 0; i < result.size(); i++) {
-        if (result[i] >= 'A' && result[i] <= 'Z') {
-            result[i] = result[i] - 'A' + 'a';
-        }
-    }
-    return result;
+    swap(a->id, b->id);
+    swap(a->name, b->name);
+    swap(a->price, b->price);
 }
 
 // Returns true if a should come before b

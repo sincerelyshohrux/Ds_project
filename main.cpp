@@ -1,8 +1,21 @@
 // ============================================================
 // Online Food Ordering and Order Processing System
-// Team name: <GalaxyE>
+// Team name: GalaxyE
 // Section: 4
-// Members: <Shohruxbek Maxamatjonov (U2510135)>, <Suxrobbek Muminov (U2510138)>, <Asliddin Xazratqulov (U2510142)>, <Name 4 (ID)>
+// Members:
+//   1. Shohruxbek Maxamatjonov (U2510135)
+//   2. Suxrobbek Muminov       (U2510138)
+//   3. Asliddin Xazratqulov    (U2510142)
+//   4. TODO: Name 4           (ID)
+//
+// Data structures used:
+//   - Singly linked list : menu items            (MenuList)
+//   - Queue (linked list): pending orders, FIFO  (OrderQueue)
+//   - Stack (linked list): completed history     (OrderStack)
+//   - Arrays             : items inside one order (Order)
+// Algorithms:
+//   - Linear search : find menu item / order by ID   O(n)
+//   - Selection sort: sort menu by price or name     O(n^2)
 // ============================================================
 
 #include <iostream>
@@ -27,6 +40,7 @@ void showMainMenu() {
     cout << "10. Cancel an order\n";
     cout << "11. Display completed-order history\n";
     cout << "12. Search order by ID\n";
+    cout << "13. Show last completed order\n";
     cout << "0. Exit\n";
 }
 
@@ -149,6 +163,10 @@ int main() {
         switch (choice) {
             case 1: {
                 string name = readText("Enter item name: ");
+                if (menu.nameTaken(name, 0)) {
+                    cout << "An item named \"" << name << "\" already exists.\n";
+                    break;
+                }
                 double price = readPrice("Enter item price: ");
                 menu.addItem(name, price);
                 break;
@@ -168,6 +186,10 @@ int main() {
                     break;
                 }
                 string name = readText("Enter new name: ");
+                if (menu.nameTaken(name, id)) {
+                    cout << "Another item named \"" << name << "\" already exists.\n";
+                    break;
+                }
                 double price = readPrice("Enter new price: ");
                 menu.updateItem(id, name, price);
                 cout << "Item updated.\n";
@@ -223,6 +245,16 @@ int main() {
             case 12:
                 searchOrder(pending, completed);
                 break;
+            case 13: {
+                const Order* last = completed.peek();   // top of the stack, O(1)
+                if (last == nullptr) {
+                    cout << "No completed orders yet.\n";
+                } else {
+                    cout << "Last completed order: ";
+                    printOrder(last);
+                }
+                break;
+            }
             case 0:
                 cout << "Goodbye!\n";
                 break;

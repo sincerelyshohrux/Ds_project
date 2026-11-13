@@ -9,7 +9,7 @@ int readInt(const std::string& prompt);
 // Reads a price. Must be greater than 0.
 double readPrice(const std::string& prompt);
 
-// Reads a non-empty line of text.
+// Reads a line of text that is not empty and not only spaces.
 std::string readText(const std::string& prompt);
 
 #endif

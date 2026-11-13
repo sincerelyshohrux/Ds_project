@@ -6,24 +6,15 @@
 #include <cmath>
 using namespace std;
 
-// If the input stream is closed (Ctrl+D / end of file), stop the program
-// instead of looping forever.
-static void checkEndOfInput() {
-    if (cin.eof()) {
-        cout << "\nInput closed. Exiting.\n";
-        exit(0);
-    }
-}
-
 // Shows the prompt and reads one whole line.
-// Exits if the input is closed or broken (avoids an endless loop).
+// If the input is closed (Ctrl+D / end of file), the program stops
+// instead of looping forever.
 static string readLine(const string& prompt) {
     cout << prompt;
     string line;
     if (!getline(cin, line)) {
-        checkEndOfInput();
-        cout << "\nInput error. Exiting.\n";
-        exit(1);
+        cout << "\nInput closed. Exiting.\n";
+        exit(0);
     }
     return line;
 }
@@ -101,11 +92,11 @@ double readPrice(const string& prompt) {
     }
 }
 
+// Reads a line of text. Spaces at the start/end are removed,
+// and a line with only spaces counts as empty.
 string readText(const string& prompt) {
-    string text;
     while (true) {
-        cout << prompt;
-        if (!getline(cin, text)) checkEndOfInput();
+        string text = trim(readLine(prompt));
         if (!text.empty()) return text;
         cout << "Input cannot be empty.\n";
     }

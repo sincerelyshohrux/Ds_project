@@ -3,7 +3,7 @@
 #include <iomanip>
 using namespace std;
 
-// Prints order ID, customer, items (from the array) and total
+// Prints one order in one line
 void printOrder(const Order* order) {
     cout << "Order ID: " << order->orderId
          << " | Customer: " << order->customerName

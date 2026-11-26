@@ -1,13 +1,12 @@
 // ============================================================
 // Online Food Ordering and Order Processing System
-// Team name: GalaxyE
+// Team name: Galaxy
 // Section: 4
 // Members:
 //   1. Shohruxbek Maxamatjonov (U2510135)
 //   2. Suxrobbek Muminov       (U2510138)
 //   3. Asliddin Xazratqulov    (U2510142)
-//   4. TODO: Name 4           (ID)
-//
+
 // Data structures used:
 //   - Singly linked list : menu items            (MenuList)
 //   - Queue (linked list): pending orders, FIFO  (OrderQueue)
@@ -44,7 +43,7 @@ void showMainMenu() {
     cout << "0. Exit\n";
 }
 
-// Asks the customer for items and adds the order to the queue
+// Customer chooses items, then the order goes to the queue
 void placeOrder(MenuList& menu, OrderQueue& pending) {
     if (menu.isEmpty()) {
         cout << "Menu is empty. Cannot place an order.\n";
@@ -54,19 +53,17 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
     string customer = readText("Enter customer name: ");
     menu.display();
 
-    int itemIds[MAX_ORDER_ITEMS];          // array: chosen item IDs
-    string itemNames[MAX_ORDER_ITEMS];     // array: chosen item names
+    int itemIds[MAX_ORDER_ITEMS];        // array: chosen item IDs
+    string itemNames[MAX_ORDER_ITEMS];   // array: chosen item names
     int count = 0;
     double total = 0;
 
     cout << "Enter item IDs one by one. Enter 0 to finish.\n";
-    // The loop always ends with 0, even when the order is full. Otherwise the
-    // user's "0 to finish" would be read by the main menu as "Exit".
     while (true) {
         int id = readInt("Item ID (0 to finish): ");
         if (id == 0) break;
 
-        if (count == MAX_ORDER_ITEMS) {   // array is full: ignore extra items
+        if (count == MAX_ORDER_ITEMS) {
             cout << "Order is full (max " << MAX_ORDER_ITEMS << " items). Enter 0 to finish.\n";
             continue;
         }
@@ -97,20 +94,20 @@ void placeOrder(MenuList& menu, OrderQueue& pending) {
     cout << "Order placed! Order ID: " << orderId << ", Total: " << fixed << setprecision(2) << total << "\n";
 }
 
-// Takes the oldest pending order (dequeue) and pushes it to history (stack)
+// Takes the oldest order from the queue and puts it on the stack
 void processNextOrder(OrderQueue& pending, OrderStack& completed) {
     if (pending.isEmpty()) {
         cout << "No pending orders to process.\n";
         return;
     }
-    Order* order = pending.dequeue();   // O(1)
-    completed.push(order);              // O(1)
+    Order* order = pending.dequeue();
+    completed.push(order);
     cout << "Processed: ";
     printOrder(order);
     cout << "Remaining pending orders: " << pending.size() << "\n";
 }
 
-// Cancels a pending order. Completed orders cannot be cancelled.
+// Cancels a pending order (completed orders cannot be cancelled)
 void cancelOrder(OrderQueue& pending, const OrderStack& completed) {
     if (pending.isEmpty()) {
         cout << "No pending orders to cancel.\n";
@@ -127,7 +124,7 @@ void cancelOrder(OrderQueue& pending, const OrderStack& completed) {
     }
 }
 
-// Searches pending queue first, then completed history
+// Searches the queue first, then the stack
 void searchOrder(const OrderQueue& pending, const OrderStack& completed) {
     if (pending.isEmpty() && completed.isEmpty()) {
         cout << "There are no orders yet.\n";
@@ -152,8 +149,8 @@ void searchOrder(const OrderQueue& pending, const OrderStack& completed) {
 
 int main() {
     MenuList menu;
-    OrderQueue pending;      // queue: orders waiting to be processed
-    OrderStack completed;    // stack: history of processed orders
+    OrderQueue pending;     // queue: waiting orders
+    OrderStack completed;   // stack: finished orders
     int choice;
 
     do {
@@ -246,7 +243,7 @@ int main() {
                 searchOrder(pending, completed);
                 break;
             case 13: {
-                const Order* last = completed.peek();   // top of the stack, O(1)
+                const Order* last = completed.peek();
                 if (last == nullptr) {
                     cout << "No completed orders yet.\n";
                 } else {

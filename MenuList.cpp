@@ -1,7 +1,7 @@
 #include "MenuList.h"
 #include <iostream>
 #include <iomanip>
-#include <utility>   // std::swap
+#include <utility>
 using namespace std;
 
 MenuList::MenuList() {
@@ -9,7 +9,7 @@ MenuList::MenuList() {
     nextId = 1;
 }
 
-// Frees all nodes
+// Deletes all nodes when the program ends
 MenuList::~MenuList() {
     while (head != nullptr) {
         MenuItem* temp = head;
@@ -36,7 +36,6 @@ bool MenuList::exists(int id) const {
     return findById(id) != nullptr;
 }
 
-// Returns a lowercase copy of the text (so "Pizza" and "pizza" are treated the same)
 static string toLower(const string& text) {
     string result = text;
     for (size_t i = 0; i < result.size(); i++) {
@@ -47,7 +46,7 @@ static string toLower(const string& text) {
     return result;
 }
 
-// Linear search by name. Time: O(n)
+// Checks if another item already has this name. Time: O(n)
 bool MenuList::nameTaken(const string& name, int skipId) const {
     MenuItem* current = head;
     while (current != nullptr) {
@@ -59,7 +58,6 @@ bool MenuList::nameTaken(const string& name, int skipId) const {
     return false;
 }
 
-// Copies name and price of the item with the given ID. Time: O(n)
 bool MenuList::getItem(int id, string& name, double& price) const {
     MenuItem* item = findById(id);
     if (item == nullptr) return false;
@@ -89,7 +87,6 @@ void MenuList::addItem(const string& name, double price) {
     cout << "Item added with ID " << newItem->id << ".\n";
 }
 
-// Prints all menu items. Time: O(n)
 void MenuList::display() const {
     if (isEmpty()) {
         cout << "Menu is empty.\n";
@@ -104,7 +101,6 @@ void MenuList::display() const {
     }
 }
 
-// Changes name and price of an existing item. Time: O(n)
 bool MenuList::updateItem(int id, const string& newName, double newPrice) {
     MenuItem* item = findById(id);
     if (item == nullptr) return false;
@@ -114,25 +110,24 @@ bool MenuList::updateItem(int id, const string& newName, double newPrice) {
     return true;
 }
 
-// Removes an item from the list. Time: O(n)
+// Deletes an item by ID. Time: O(n)
 bool MenuList::deleteItem(int id) {
     if (head == nullptr) return false;
 
-    // Case 1: the item to delete is the first node
+    // Case 1: the item is the first node
     if (head->id == id) {
         MenuItem* temp = head;
         head = head->next;
         delete temp;
         return true;
     }
-
-    // Case 2: find the node BEFORE the one we want to delete
+    // Case 2: find the node before the one we delete
     MenuItem* current = head;
     while (current->next != nullptr && current->next->id != id) {
         current = current->next;
     }
 
-    if (current->next == nullptr) return false;   // not found
+    if (current->next == nullptr) return false;
 
     MenuItem* temp = current->next;
     current->next = temp->next;
@@ -140,29 +135,28 @@ bool MenuList::deleteItem(int id) {
     return true;
 }
 
-// Swaps id, name and price of two nodes (the links stay the same)
+// Swaps the data of two nodes (links stay the same)
 void MenuList::swapData(MenuItem* a, MenuItem* b) {
     swap(a->id, b->id);
     swap(a->name, b->name);
     swap(a->price, b->price);
 }
 
-// Returns true if a should come before b
 bool MenuList::isLess(MenuItem* a, MenuItem* b, bool byPrice) const {
     if (byPrice) {
         return a->price < b->price;
     }
-    return toLower(a->name) < toLower(b->name);   // alphabetical, ignores upper/lower case
+    return toLower(a->name) < toLower(b->name);
 }
 
-// Selection sort on the linked list. Time: O(n^2)
+// Selection sort: by price or by name. Time: O(n^2)
 void MenuList::sortMenu(bool byPrice) {
-    if (head == nullptr || head->next == nullptr) return;   // 0 or 1 item
+    if (head == nullptr || head->next == nullptr) return;
 
     for (MenuItem* i = head; i->next != nullptr; i = i->next) {
         MenuItem* smallest = i;
+        // find the smallest item in the rest of the list
 
-        // find the smallest item in the remaining part
         for (MenuItem* j = i->next; j != nullptr; j = j->next) {
             if (isLess(j, smallest, byPrice)) {
                 smallest = j;

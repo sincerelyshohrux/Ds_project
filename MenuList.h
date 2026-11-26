@@ -3,7 +3,7 @@
 
 #include <string>
 
-// One node of the menu linked list
+// One menu item = one node of the linked list
 struct MenuItem {
     int id;
     std::string name;
@@ -15,18 +15,17 @@ struct MenuItem {
 class MenuList {
 private:
     MenuItem* head;
-    int nextId;   // auto-increment ID for new items
+    int nextId;
 
-    MenuItem* findById(int id) const;   // helper: returns nullptr if not found
-    void swapData(MenuItem* a, MenuItem* b);   // helper: swaps the data of two nodes
-    bool isLess(MenuItem* a, MenuItem* b, bool byPrice) const;   // helper: compares two nodes
+    MenuItem* findById(int id) const;
+    void swapData(MenuItem* a, MenuItem* b);
+    bool isLess(MenuItem* a, MenuItem* b, bool byPrice) const;
 
 public:
     MenuList();
     ~MenuList();
 
-    // Copying is disabled: a copy would share the same nodes and both
-    // destructors would delete them (double free).
+    // Copying is not allowed (two lists would share the same nodes)
     MenuList(const MenuList&) = delete;
     MenuList& operator=(const MenuList&) = delete;
 
@@ -37,14 +36,8 @@ public:
     bool deleteItem(int id);
     bool exists(int id) const;
 
-    // True if another item (with a different ID) already has this name.
-    // Upper/lower case is ignored. Use skipId = 0 when adding a new item.
     bool nameTaken(const std::string& name, int skipId) const;
-
-    // Gets name and price of an item. Returns false if the ID does not exist.
     bool getItem(int id, std::string& name, double& price) const;
-
-    // Sorts the menu. byPrice = true -> by price, false -> by name
     void sortMenu(bool byPrice);
 };
 

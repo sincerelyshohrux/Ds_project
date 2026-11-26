@@ -6,9 +6,7 @@
 #include <cmath>
 using namespace std;
 
-// Shows the prompt and reads one whole line.
-// If the input is closed (Ctrl+D / end of file), the program stops
-// instead of looping forever.
+// Reads one line. Stops the program if input is closed
 static string readLine(const string& prompt) {
     cout << prompt;
     string line;
@@ -19,7 +17,7 @@ static string readLine(const string& prompt) {
     return line;
 }
 
-// Returns a copy of the text without spaces/tabs at the start and end
+// Removes spaces at the start and end
 static string trim(const string& text) {
     size_t start = 0;
     while (start < text.size() && (text[start] == ' ' || text[start] == '\t' || text[start] == '\r')) {
@@ -32,8 +30,7 @@ static string trim(const string& text) {
     return text.substr(start, end - start);
 }
 
-// True if text is: optional '+'/'-' followed by one or more digits.
-// Rejects "3.7", "1x", "1e5", "" etc.
+// True if text is a whole number, like 12 or -3
 static bool isWholeNumber(const string& text) {
     size_t i = 0;
     if (i < text.size() && (text[i] == '+' || text[i] == '-')) i++;
@@ -44,8 +41,7 @@ static bool isWholeNumber(const string& text) {
     return true;
 }
 
-// True if text is digits with at most one '.', and at least one digit.
-// Accepts "12", "12.5", ".5", "12."; rejects "12.5.3", "5abc", "-5", "inf", "nan", "1e3".
+// True if text is a number like 12 or 12.5
 static bool isDecimalNumber(const string& text) {
     int digits = 0;
     int dots = 0;
@@ -62,7 +58,7 @@ static bool isDecimalNumber(const string& text) {
     return digits > 0;
 }
 
-// The whole line must be a whole number that fits in an int.
+// Reads a whole number
 int readInt(const string& prompt) {
     while (true) {
         string text = trim(readLine(prompt));
@@ -77,7 +73,7 @@ int readInt(const string& prompt) {
     }
 }
 
-// The whole line must be a decimal number greater than 0.
+// Reads a price greater than 0
 double readPrice(const string& prompt) {
     while (true) {
         string text = trim(readLine(prompt));
@@ -92,8 +88,7 @@ double readPrice(const string& prompt) {
     }
 }
 
-// Reads a line of text. Spaces at the start/end are removed,
-// and a line with only spaces counts as empty.
+// Reads text that is not empty
 string readText(const string& prompt) {
     while (true) {
         string text = trim(readLine(prompt));

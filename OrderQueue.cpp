@@ -9,7 +9,7 @@ OrderQueue::OrderQueue() {
     nextOrderId = 1001;
 }
 
-// Frees all nodes
+// Deletes all nodes when the program ends
 OrderQueue::~OrderQueue() {
     while (head != nullptr) {
         Order* temp = head;
@@ -26,7 +26,7 @@ int OrderQueue::size() const {
     return count;
 }
 
-// Adds an order at the back of the queue. Time: O(1)
+// Adds an order at the back. Time: O(1)
 int OrderQueue::enqueue(const string& customerName, const int itemIds[],
                         const string itemNames[], int itemCount, double total) {
     Order* newOrder = new Order;
@@ -41,7 +41,7 @@ int OrderQueue::enqueue(const string& customerName, const int itemIds[],
         newOrder->itemNames[i] = itemNames[i];
     }
 
-    if (tail == nullptr) {      // queue was empty
+    if (tail == nullptr) {
         head = newOrder;
         tail = newOrder;
     } else {
@@ -52,40 +52,38 @@ int OrderQueue::enqueue(const string& customerName, const int itemIds[],
     return newOrder->orderId;
 }
 
-// Removes the oldest order (front). Time: O(1)
+// Removes the order from the front. Time: O(1)
 Order* OrderQueue::dequeue() {
-    if (isEmpty()) return nullptr;   // underflow
+    if (isEmpty()) return nullptr;
 
     Order* front = head;
     head = head->next;
-    if (head == nullptr) {           // queue became empty
+    if (head == nullptr) {   // queue became empty
         tail = nullptr;
     }
-    front->next = nullptr;           // detach the node
+    front->next = nullptr;
     count--;
     return front;
 }
 
-// Removes an order from any position of the queue. Time: O(n)
+// Removes an order by ID from any place. Time: O(n)
 bool OrderQueue::cancelOrder(int orderId) {
     if (isEmpty()) return false;
 
-    // Case 1: the order is at the front
     if (head->orderId == orderId) {
         delete dequeue();
         return true;
     }
 
-    // Case 2: find the node BEFORE the one we want to remove
     Order* current = head;
     while (current->next != nullptr && current->next->orderId != orderId) {
         current = current->next;
     }
-    if (current->next == nullptr) return false;   // not found
+    if (current->next == nullptr) return false;
 
     Order* temp = current->next;
     current->next = temp->next;
-    if (temp == tail) {        // removed the last node -> move tail back
+    if (temp == tail) {   // last node removed -> move tail back
         tail = current;
     }
     delete temp;
@@ -93,7 +91,7 @@ bool OrderQueue::cancelOrder(int orderId) {
     return true;
 }
 
-// Linear search from front to back. Time: O(n)
+// Linear search by order ID. Time: O(n)
 const Order* OrderQueue::findById(int orderId) const {
     Order* current = head;
     while (current != nullptr) {
@@ -103,7 +101,6 @@ const Order* OrderQueue::findById(int orderId) const {
     return nullptr;
 }
 
-// Prints pending orders, the oldest first. Time: O(n)
 void OrderQueue::display() const {
     if (isEmpty()) {
         cout << "No pending orders.\n";

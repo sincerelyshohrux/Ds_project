@@ -7,7 +7,6 @@ OrderStack::OrderStack() {
     count = 0;
 }
 
-// Frees all nodes
 OrderStack::~OrderStack() {
     while (top != nullptr) {
         Order* temp = top;
@@ -32,12 +31,12 @@ void OrderStack::push(Order* order) {
     count++;
 }
 
-// Looks at the top order. Time: O(1)
+// Returns the top order without removing it. Time: O(1)
 const Order* OrderStack::peek() const {
     return top;
 }
 
-// Linear search from top to bottom. Time: O(n)
+// Linear search by order ID. Time: O(n)
 const Order* OrderStack::findById(int orderId) const {
     Order* current = top;
     while (current != nullptr) {
@@ -47,7 +46,6 @@ const Order* OrderStack::findById(int orderId) const {
     return nullptr;
 }
 
-// Prints history, newest first. Time: O(n)
 void OrderStack::display() const {
     if (isEmpty()) {
         cout << "No completed orders yet.\n";
